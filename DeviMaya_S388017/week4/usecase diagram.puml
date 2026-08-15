@@ -1,0 +1,36 @@
+@startuml SplitSync_UseCaseDiagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "User" as User
+actor "Group Member" as Member
+
+Member --|> User
+
+rectangle "SplitSync" {
+  usecase "Manage Account\n(UC-01)" as UC01
+  usecase "Manage Spending Group\n(UC-02)" as UC02
+  usecase "View Group List\n(UC-03)" as UC03
+  usecase "View Group Balance\n(UC-04)" as UC04
+  usecase "View Group Transactions\n(UC-05)" as UC05
+  usecase "Manage Expense\n(UC-06)" as UC06
+  usecase "Manage Recurring Expense\n(UC-07)" as UC07
+  usecase "Manage Settlement\n(UC-08)" as UC08
+  usecase "View Activity\n(UC-09)" as UC09
+  usecase "Manage Notification Settings\n(UC-10)" as UC10
+}
+
+User -- UC01
+User -- UC10
+
+Member -- UC02
+Member -- UC03
+Member -- UC04
+Member -- UC05
+Member -- UC06
+Member -- UC07
+Member -- UC08
+Member -- UC09
+
+@enduml

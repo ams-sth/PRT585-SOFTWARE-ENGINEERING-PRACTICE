@@ -1,0 +1,40 @@
+gantt
+    title SplitSync Project Timeline (Week 4 - Week 11)
+    dateFormat YYYY-MM-DD
+    axisFormat W%W
+
+    section Requirements & Planning (W4)
+    Create SRS (FR, UC, AC, diagram, matrix, NFR)  :a1, 2026-01-19, 4d
+    WBS + Gantt chart                              :a2, 2026-01-19, 1d
+
+    section Design (W5-W6)
+    ER diagram                      :b1, 2026-01-26, 2d
+    Figma mockup                    :b3, 2026-01-26, 5d
+    DB schema design                :b4, after b1, 3d
+    Schema review                   :b5, after b4, 1d
+    Test plan + initial cases       :b6, 2026-01-26, 4d
+
+    section Implementation (incl. Testing) (W6-W9)
+    Auth integration (BE/FE/Test)             :c1, after b5, 4d
+    Group CRUD (BE/FE/Test)                   :c2, after c1, 5d
+    Expense CRUD + Splits (BE/FE/Test)        :c3, after c2, 7d
+    Receipt upload - S3 (BE/FE/Test)          :c4, after c2, 3d
+    Settlement recording (BE/FE/Test)         :c5, after c3, 3d
+    Recurring scheduler (BE/FE/Test)          :c6, after c5, 4d
+    Notifications (BE/FE/Test)                :c7, after c5, 3d
+    Activity feed (BE/FE/Test)                :c8, after c7, 3d
+    DB migrations/deploy                      :c9, after b5, 15d
+
+    section Stabilization (W9)
+    Defect fixes                    :d1, after c8, 3d
+    Regression pass                 :d2, after d1, 2d
+    NFR validation                  :d3, after d1, 2d
+
+    section Demo Prep (W10)
+    Final bug fixes                 :e1, after d2, 2d
+    Demo script                     :e2, after e1, 1d
+    Rehearsal                       :e3, after e2, 2d
+    SRS/doc cleanup                 :e4, after d2, 2d
+
+    section Presentation (W11)
+    Final Presentation              :milestone, f1, after e3, 0d

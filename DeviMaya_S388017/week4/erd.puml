@@ -1,0 +1,144 @@
+@startuml SplitSync_ERD
+!define PK(x) <b><color:#b8860b><&key></color> x</b>
+!define FK(x) <color:#4682b4><&link-intact></color> x
+
+skinparam linetype ortho
+
+entity "Users" as users {
+  PK(ID) : uuid
+  --
+  IdPSubjectID : varchar <<unique, not null>>
+  Name : varchar
+  Email : varchar
+  IsDeleted : boolean
+  NotificationsEnabled : boolean
+}
+
+entity "Groups" as groups {
+  PK(ID) : uuid
+  --
+  Name : varchar
+  FK(CreatorID) : uuid
+}
+
+entity "GroupMembers" as group_members {
+  PK(FK(GroupID)) : uuid
+  PK(FK(UserID)) : uuid
+}
+
+entity "Expenses" as expenses {
+  PK(ID) : uuid
+  --
+  FK(GroupID) : uuid
+  FK(PayerID) : uuid
+  Name : varchar
+  Notes : text
+  ExpenseDate : date
+  Amount : decimal(10,2)
+  SplitType : enum(Equal, Unequal, Percentage)
+  AttachmentPath : varchar <<nullable>>
+}
+
+entity "ExpenseParticipants" as expense_participants {
+  PK(FK(ExpenseID)) : uuid
+  PK(FK(UserID)) : uuid
+}
+
+entity "ExpenseSplitValues" as expense_split_values {
+  PK(FK(ExpenseID)) : uuid
+  PK(FK(UserID)) : uuid
+  --
+  Value : decimal(10,2)
+}
+
+entity "RecurringExpenses" as recurring_expenses {
+  PK(ID) : uuid
+  --
+  FK(GroupID) : uuid
+  FK(PayerID) : uuid
+  Name : varchar
+  Notes : text
+  Amount : decimal(10,2)
+  SplitType : enum(Equal, Unequal, Percentage)
+  OccurrenceType : enum(Weekly, Monthly, Interval)
+  OccurrenceValue : int
+  StartDate : date
+  EndDate : date
+  NextRunDate : date
+}
+
+entity "RecurringExpenseParticipants" as recurring_expense_participants {
+  PK(FK(RecurringExpenseID)) : uuid
+  PK(FK(UserID)) : uuid
+}
+
+entity "RecurringExpenseSplitValues" as recurring_expense_split_values {
+  PK(FK(RecurringExpenseID)) : uuid
+  PK(FK(UserID)) : uuid
+  --
+  Value : decimal(10,2)
+}
+
+entity "Settlements" as settlements {
+  PK(ID) : uuid
+  --
+  FK(GroupID) : uuid
+  FK(PayerID) : uuid
+  FK(RecipientID) : uuid
+  Amount : decimal(10,2)
+  SettlementDate : date
+}
+
+entity "Balances" as balances {
+  PK(FK(GroupID)) : uuid
+  PK(FK(UserLowID)) : uuid
+  PK(FK(UserHighID)) : uuid
+  --
+  NetAmount : decimal(10,2)
+}
+
+entity "Activities" as activities {
+  PK(ID) : uuid
+  --
+  FK(GroupID) : uuid
+  FK(ActorID) : uuid
+  TransactionType : enum(Expense, Settlement)
+  ActionType : enum(Create, Edit, Delete)
+  OccurredAt : timestamp
+  FK(OtherPartyID) : uuid <<nullable>>
+  Name : varchar
+  Amount : decimal(10,2)
+}
+
+' -- Relationships --
+users ||--o{ groups : creates
+groups ||--o{ group_members : has
+users ||--o{ group_members : joins
+
+groups ||--o{ expenses : contains
+users ||--o{ expenses : pays
+expenses ||--o{ expense_participants : has
+users ||--o{ expense_participants : "is part of"
+expenses ||--o{ expense_split_values : has
+users ||--o{ expense_split_values : owes
+
+groups ||--o{ recurring_expenses : contains
+users ||--o{ recurring_expenses : pays
+recurring_expenses ||--o{ recurring_expense_participants : has
+users ||--o{ recurring_expense_participants : "is part of"
+recurring_expenses ||--o{ recurring_expense_split_values : has
+users ||--o{ recurring_expense_split_values : owes
+
+groups ||--o{ settlements : contains
+users ||--o{ settlements : "pays (creator)"
+users ||--o{ settlements : receives
+
+groups ||--o{ balances : tracks
+users ||--o{ balances : "user (low)"
+users ||--o{ balances : "user (high)"
+
+groups ||--o{ activities : logs
+users ||--o{ activities : "performs (actor)"
+users |o--o{ activities : "other party (settlement)"
+
+@enduml
